@@ -5,16 +5,37 @@ const path = require("node:path");
 const port = 3000;
 const hostname = "localhost";
 
-async function httpRequestListener(req, res) {
-  const filePath = path.join(__dirname, "..", "dist", req.url === "/" ? "index.html" : req.url);
+async function fileGetter(url) {
+  let filePath;
   try {
-    res.writeHead(200, { "Content-Type": "text/html" });
-    const data = await fs.readFile(filePath);
-    res.write(data);
+    filePath = path.join(__dirname, "..", "dist", url === "/" ? "index.html" : url);
+    const result = await fs.readFile(filePath);
+    return { status: "success", data: result };
   } catch (error) {
-    console.log("errorrrrrr------->", error);
+    if (error.code === "ENOENT") {
+      filePath = path.join(__dirname, "..", "dist", "404.html");
+      const errorPage = await fs.readFile(filePath);
+      return { status: "fail", data: errorPage };
+    }
   }
-  res.end();
+}
+
+async function httpRequestListener(req, res) {
+  try {
+    const data = await fileGetter(req.url);
+    //console.log(data);
+    if (data.status === "success") {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data.data);
+      // this else if block doesn't work -- why
+    } else if (data.status === "fail") {
+      res.writeHead(404, { "Content-Type": "text/html" });
+      res.end(data.data);
+    }
+  } catch (error) {
+    res.writeHead(500, { "Content-Type": "text/html" });
+    res.end("<h1>Internal Server Error</h1>");
+  }
 }
 
 const server = http.createServer(httpRequestListener);

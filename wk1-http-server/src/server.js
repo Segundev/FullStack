@@ -9,11 +9,13 @@ async function fileGetter(url) {
   let filePath;
   try {
     filePath = path.join(__dirname, "..", "dist", url === "/" ? "index.html" : url);
+    let extname = String(path.extname(filePath)).replace(".", "").toLowerCase();
     const result = await fs.readFile(filePath);
-    return { status: "success", data: result };
+    return { status: "success", ext: extname, data: result };
   } catch (error) {
     if (error.code === "ENOENT") {
       filePath = path.join(__dirname, "..", "dist", "404.html");
+
       const errorPage = await fs.readFile(filePath);
       return { status: "fail", data: errorPage };
     }
@@ -25,9 +27,8 @@ async function httpRequestListener(req, res) {
     const data = await fileGetter(req.url);
     //console.log(data);
     if (data.status === "success") {
-      res.writeHead(200, { "Content-Type": "text/html" });
+      res.writeHead(200, { "Content-Type": `text/${data.ext}` });
       res.end(data.data);
-      // this else if block doesn't work -- why
     } else if (data.status === "fail") {
       res.writeHead(404, { "Content-Type": "text/html" });
       res.end(data.data);

@@ -150,4 +150,15 @@ var forAgainstLet = new BlogPost("for and against let", "Kyle Simpson", "October
 
 forAgainstLet.print();
 
-// MODULES
+// ES MODULES
+/* 
+ES6 are meant to serve the same purpose as the existing classic modules just described taking into account important
+variations and use case from AMD, UMD and commonJS
+
+
+There is no wrapping function to define a module. The wrapping context is a file. ESM modules are file based, One file, One module
+
+
+You also dont Instantiate an ES MODULE, you import it, you import it to use its single instance
+ESM modules are in effect singletons
+*/

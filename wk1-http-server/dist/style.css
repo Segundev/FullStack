@@ -11,11 +11,70 @@ body {
     margin: 0rem;
 }
 
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    width: 280px;
+    font-size: 13px;
+    color:#5d5d5d;
+}
+
+button {
+    height: 45px;
+    background-color: beige;
+}
+
+input {
+    width: 100%;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 2px solid white;
+    color: beige;
+}
+
+input:focus, input:active {
+    outline: none;
+    background-color: transparent;
+}
+
+ul {
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
 ul li{
     list-style: none;
     margin-bottom: 1rem;
 }
 
 a {
-    color: beige
+    color: beige;
+    text-decoration: none;
+}
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 280px;
+    height: 40px;
+    background-color: floralwhite;
+    text-align: center;
+    border-radius: 2rem;
+    margin-top: 3rem;
+    border: 3px solid #18755b;
+}
+
+.login-wrapper a {
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    color:#010102;
+}
+
+.register-wrapper{
+    font-size: 12px;
 }

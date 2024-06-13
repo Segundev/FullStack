@@ -1,41 +1,138 @@
+// nodejs modules
+
 const http = require("node:http");
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const URL = require("node:url");
+const cookiesLib = require("cookie");
 
 const port = 3000;
 const hostname = "localhost";
 
-async function fileGetter(url) {
-  let filePath;
-  try {
-    filePath = path.join(__dirname, "..", "dist", url === "/" ? "index.html" : url);
-    let extname = String(path.extname(filePath)).replace(".", "").toLowerCase();
-    const result = await fs.readFile(filePath);
-    return { status: "success", ext: extname, data: result };
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      filePath = path.join(__dirname, "..", "dist", "404.html");
+// mimetypes -  used for http request and response headers
+const mimeTypes = {
+  ".html": "text/html",
+  ".js": "text/javascript",
+  ".css": "text/css",
+  ".pdf": "application/pdf",
+  ".json": "application/json",
+  ".ico": "image/icon",
+};
 
-      const errorPage = await fs.readFile(filePath);
-      return { status: "fail", data: errorPage };
-    }
+// object to save users information - password and username
+const USERS = [
+  {
+    username: "Jayeola",
+    password: "Gbenga",
+  },
+  {
+    username: "Jason",
+    password: "Norwood",
+  },
+];
+
+function checkAuth(req) {
+  const cookiesStatus = req.headers.cookie !== undefined ? true : false;
+  return cookiesStatus;
+}
+
+// function that gets the filePath from a request url. This function gets the path
+// with the mimeType file from the request headers
+function getFilePath(url, error = false) {
+  let filePath;
+  if (error) {
+    filePath = path.join(__dirname, "..", "dist", "404.html");
+  } else {
+    filePath = path.join(__dirname, "..", "dist", url === "/" ? "index.html" : url);
+  }
+
+  return filePath;
+}
+
+// function gets the file from http request in buffer format. returns object with properties
+// status either fail or success and data containing the file content or error message when file
+// not found
+async function fileGetter(path) {
+  try {
+    const result = await fs.readFile(path);
+    return { status: "success", data: result };
+  } catch (error) {
+    return { status: "fail", data: error };
   }
 }
 
+// function that handles http request and response
+// returns http response with appropriate headers and file from http request
 async function httpRequestListener(req, res) {
-  try {
-    const data = await fileGetter(req.url);
-    //console.log(data);
-    if (data.status === "success") {
-      res.writeHead(200, { "Content-Type": `text/${data.ext}` });
-      res.end(data.data);
-    } else if (data.status === "fail") {
-      res.writeHead(404, { "Content-Type": "text/html" });
-      res.end(data.data);
+  if (req.method === "POST" && req.url === "/login") {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+
+    req.on("end", () => {
+      const params = new URLSearchParams(body);
+      const username = params.get("username");
+      const password = params.get("password");
+
+      const user = USERS.find((d) => d.username === username);
+
+      if (!user) {
+        res.writeHead(401, { "Content-Type": "text/html" });
+        res.end("Username not found");
+        return;
+      }
+
+      const sessionId = crypto.randomUUID();
+
+      const cookie = cookiesLib.serialize("cookieSet", sessionId, {
+        httpOnly: true,
+        maxAge: 60 * 5, // 5 minutes
+      });
+
+      USERS.push({ username: username, password: password });
+
+      let UNIQUEUSERS = new Set(USERS.map(JSON.stringify));
+      UNIQUEUSERS = Array.from(UNIQUEUSERS).map(JSON.parse);
+
+      //console.log(UNIQUEUSERS);
+
+      UNIQUEUSERS.forEach(async (d) => {
+        if (d.username === username && d.password === password) {
+          const result = await fs.readFile(path.join(__dirname, "..", "dist", "profile.html"));
+          res.writeHead(200, { "Content-Type": "text/html", "Set-Cookie": cookie });
+          res.end(result);
+          return;
+        }
+      });
+    });
+
+    return;
+  }
+
+  // handle resquest
+  let filePath = getFilePath(req.url);
+  const extname = String(path.extname(filePath)).toLowerCase();
+  const contentType = mimeTypes[extname];
+  let contentData = await fileGetter(filePath);
+
+  // handle response
+  if (checkAuth && req.url === "/login") {
+    const result = await fs.readFile(path.join(__dirname, "..", "dist", "profile.html"));
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(result);
+  } else {
+    if (contentData.status === "success") {
+      res.writeHead(200, { "Content-Type": contentType });
+      res.end(contentData.data);
+    } else {
+      if (contentData.data.code === "ENOENT") {
+        filePath = getFilePath(req.url, (error = true));
+        let html404 = await fileGetter(filePath);
+        res.writeHead(404, { "Content-Type": contentType });
+        res.end(html404.data);
+      }
     }
-  } catch (error) {
-    res.writeHead(500, { "Content-Type": "text/html" });
-    res.end("<h1>Internal Server Error</h1>");
   }
 }
 
@@ -45,6 +142,6 @@ server.listen(port, hostname, (error) => {
   if (error) {
     console.log("something is not right: error ", error);
   } else {
-    console.log("server is listening on port " + port);
+    console.log(`server is listening on port http://${hostname}:${port}`);
   }
 });

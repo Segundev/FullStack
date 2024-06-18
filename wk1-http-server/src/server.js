@@ -1,23 +1,14 @@
 // nodejs modules
 
-const http = require("node:http");
-const fs = require("node:fs/promises");
-const path = require("node:path");
-const URL = require("node:url");
-const cookiesLib = require("cookie");
+import http from "node:http";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { URL } from "node:url";
+import cookiesLib from "cookie";
+import { mimeTypes } from "./utils/mimetype";
 
 const port = 3000;
 const hostname = "localhost";
-
-// mimetypes -  used for http request and response headers
-const mimeTypes = {
-  ".html": "text/html",
-  ".js": "text/javascript",
-  ".css": "text/css",
-  ".pdf": "application/pdf",
-  ".json": "application/json",
-  ".ico": "image/icon",
-};
 
 // object to save users information - password and username
 const USERS = [
@@ -41,9 +32,10 @@ function checkAuth(req) {
 function getFilePath(url, error = false) {
   let filePath;
   if (error) {
-    filePath = path.join(__dirname, "..", "dist", "404.html");
+    filePath = new URL("src/templates/404.html", import.meta.url);
   } else {
-    filePath = path.join(__dirname, "..", "dist", url === "/" ? "index.html" : url);
+    filePath = new URL(url === "/" ? "index.html" : url, import.meta.url);
+    // filePath = path.join(__dirname, "..", "dist", url === "/" ? "index.html" : url);
   }
 
   return filePath;

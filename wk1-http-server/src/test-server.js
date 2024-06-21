@@ -92,8 +92,10 @@ const handleUserRoutes = (method, path, req, res, sendResponse) => {
     let body = "";
     req.on("data", (chunk) => (body += chunk.toString()));
     req.on("end", () => {
-      const { name, companyId } = parseQuery(body);
-      const newUser = { id: users.length + 1, name, companyId: parseInt(companyId, 10) };
+      console.log(body);
+      const { name, email, company } = parseQuery(body);
+      const newUser = { id: users.length + 1, name, email, company: parseInt(company, 10) };
+      console.log(newUser);
       users.push(newUser);
       sendResponse(201, newUser);
     });
@@ -120,7 +122,7 @@ const handleUserRoutes = (method, path, req, res, sendResponse) => {
   }
 };
 
-const PORT = 3000;
+const PORT = 3001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

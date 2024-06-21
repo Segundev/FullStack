@@ -1,20 +1,26 @@
 [
-    {
-        "id": 1,
-        "name": "John Doe",
-        "email": "john@doe.com",
-        "company": 1
-    },
-    {
-        "id": 2,
-        "name": "Jane Doe",
-        "email": "jane@doe.com",
-        "company": 2
-    },
-    {
-        "id": 3,
-        "name": "John Smith",
-        "email": "john@smith.com",
-        "company": 1
-    }
+  {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@doe.com",
+    "company": 1
+  },
+  {
+    "id": 2,
+    "name": "Jane Doe",
+    "email": "jane@doe.com",
+    "company": 2
+  },
+  {
+    "id": 3,
+    "name": "John Smith",
+    "email": "john@smith.com",
+    "company": 1
+  },
+  {
+    "id": 4,
+    "name": "Jayeola",
+    "email": "jayesegun03@gmail.com",
+    "company": 1
+  }
 ]

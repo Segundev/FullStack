@@ -4,8 +4,8 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --watch index.js",
+    "test": "jest --watch --coverage"
   },
   "keywords": [],
   "author": "Jayeola Gbenga",
@@ -13,5 +13,10 @@
   "description": "a simple http server using node.js",
   "dependencies": {
     "cookie": "^0.6.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.24.7",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
   }
 }

@@ -22,9 +22,6 @@ import {
   savePeopleDB,
 } from "../utils/db.js";
 
-const PEOPLE_DB_PATH = new URL("../../data/people.json", import.meta.url).pathname;
-const COMPANIES_DB_PATH = new URL("../../data/companies.json", import.meta.url).pathname;
-
 const sendResponse = (res, statusCode, data) => {
   res.writeHead(statusCode, { "Content-Type": "application/json" });
   res.end(JSON.stringify(data));

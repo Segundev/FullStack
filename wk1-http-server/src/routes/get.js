@@ -17,7 +17,7 @@ export const getRequestListener = async (req, res, ROOT_PATH) => {
         case /^\/api\/company\/\d+$/.test(pathUrl):
           getCompany(res, pathUrl);
           break;
-        case /^\/api\/users\/\d+$/.test(pathUrl):
+        case /^\/api\/user\/\d+$/.test(pathUrl):
           getUser(res, pathUrl);
           break;
         default:

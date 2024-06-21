@@ -4,7 +4,7 @@
 
 ### List Companies
 
-- **GET** `http://localhost:3000/api/company`
+- **GET** `http://localhost:3000/api/companies`
 
 ### Get Company by ID
 
@@ -13,12 +13,12 @@
 ### Create Company
 
 - **POST** `http://localhost:3000/api/company`
-  - **Body**: `name=NewCompany`
+  - **Body**: `id=companyID&name=comapanyName&address=address`
 
 ### Update Company
 
 - **PUT** `http://localhost:3000/api/company/1`
-  - **Body**: `name=UpdatedCompany`
+  - **Body**: `id=companyID&name=NewComapanyName&address=newAddress`
 
 ### Delete Company
 
@@ -28,7 +28,7 @@
 
 ### List Users and their Companies
 
-- **GET** `http://localhost:3000/api/user`
+- **GET** `http://localhost:3000/api/users`
 
 ### Get User by ID and their Company
 
@@ -37,12 +37,12 @@
 ### Create User
 
 - **POST** `http://localhost:3000/api/user`
-  - **Body**: `name=NewUser&companyId=1`
+  - **Body**: `name=NewUsername&email=NewComapnyId&company=companyId`
 
 ### Update User
 
 - **PUT** `http://localhost:3000/api/user/1`
-  - **Body**: `name=UpdatedUser&companyId=2`
+  - **Body**: `name=NewUsername&email=NewComapnyId&company=companyId`
 
 ### Delete User
 

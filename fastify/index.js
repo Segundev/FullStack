@@ -1,29 +1,39 @@
 import Fastify from "fastify";
+import fastifyPostgres from "@fastify/postgres";
 
-export const app = Fastify({
-    logger: true
-});
+import users from "./src/users-controller.js";
+import companies from "./src/companies-controller.js";
+import dotenv from "dotenv";
 
-app.get("/", (req, res) => {
-    res.send({
-        status: "Okay",
-        message: "Hello World!"
-    });
-});
+// Load environment variables from .env file
+dotenv.config();
 
-app.post("/", (req, res) => {
-    res.send({
-        status: "Okay",
-        message: `Hello ${req.body.name}!`
-    });
-});
+// use default logger
+const opts = {
+  logger: true,
+};
 
-if (process.env.NODE_ENV !== 'test') {
-    app.listen({ port: 3000 }, (err, address) => {
-        if (err) {
-            console.error(err);
-            process.exit(1);
-        }
-        console.log(`Server listening at ${address}`);
-    });
+// use pino-pretty
+if (process.stdout.isTTY) {
+  opts.logger = { transport: { target: "pino-pretty" } };
 }
+
+// instantiate fastify app
+const app = Fastify(opts);
+
+// connect to postgres database
+/* app.register(fastifyPostgres, {
+  connectionString: `postgres://postgres:mysecretpassword@localhost:5500/fastify_db`,
+}); */
+
+app.register(fastifyPostgres, {
+  connectionString: `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`,
+});
+
+// register users controllers API route
+app.register(users, { prefix: "/api" });
+
+// register companies controllers API route
+app.register(companies, { prefix: "/api" });
+
+app.listen({ port: 3001 });

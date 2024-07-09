@@ -14,7 +14,7 @@ const users = (fastify, options, done) => {
   fastify.get("/users", async (request, reply) => {
     const client = await fastify.pg.connect();
     const result = await client.query(
-      "SELECT username, email, company.company_name FROM users INNER JOIN company ON users.company_id = company.company_id"
+      "SELECT users.user_id, users.username, users.email, users.company_id, company.company_name FROM users INNER JOIN company ON users.company_id = company.company_id"
     );
     reply.send(result.rows);
   });
